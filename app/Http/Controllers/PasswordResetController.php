@@ -18,9 +18,7 @@ class PasswordResetController extends Controller
 
         $status = Password::sendResetLink($request->only('email'));
 
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['message' => 'Un lien de réinitialisation du mot de passe a été envoyé à votre adresse email.'])
-            : response()->json(['message' => 'Une erreur est survenue lors de l\'envoi du lien de réinitialisation.'], 500);
+        return $this->sendResponse($status, 'Un lien de réinitialisation du mot de passe a été envoyé à votre adresse email.', 'Une erreur est survenue lors de l\'envoi du lien de réinitialisation.');
     }
 
     public function resetPassword(Request $request)
@@ -34,17 +32,11 @@ class PasswordResetController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
-
-                $user->save();
+                $this->updateUserPassword($user, $password);
             }
         );
 
-        return $status === Password::PASSWORD_RESET
-            ? response()->json(['message' => 'Votre mot de passe a été réinitialisé avec succès.'])
-            : response()->json(['message' => 'Une erreur est survenue lors de la réinitialisation du mot de passe.'], 500);
+        return $this->sendResponse($status, 'Votre mot de passe a été réinitialisé avec succès.', 'Une erreur est survenue lors de la réinitialisation du mot de passe.');
     }
 
     public function checkResetToken(Request $request)
@@ -58,25 +50,31 @@ class PasswordResetController extends Controller
             ->where('email', $request->email)
             ->first();
 
-        if (!$passwordReset) {
-            return response()->json(['message' => 'Votre lien de réinitialisation est invalide ou a expiré.'], 422);
-        }
-
-        if (!Hash::check($request->token, $passwordReset->token)) {
-            return response()->json(['message' => 'Votre lien de réinitialisation est invalide ou a expiré.'], 422);
-        }
-
-        if ($this->isTokenExpired($passwordReset->created_at)) {
+        if (!$passwordReset || !Hash::check($request->token, $passwordReset->token) || $this->isTokenExpired($passwordReset->created_at)) {
             return response()->json(['message' => 'Votre lien de réinitialisation est invalide ou a expiré.'], 422);
         }
 
         return response()->json(['message' => 'Lien de réinitialisation valide.'], 200);
     }
 
+    private function updateUserPassword($user, $password)
+    {
+        $user->forceFill([
+            'password' => Hash::make($password),
+            'remember_token' => Str::random(60),
+        ])->save();
+    }
+
     private function isTokenExpired($createdAt)
     {
         $expirationTime = Carbon::parse($createdAt)->addMinutes(config('auth.passwords.users.expire', 60));
-
         return $expirationTime->isPast();
+    }
+
+    private function sendResponse($status, string $successMessage, string $errorMessage)
+    {
+        return $status === Password::RESET_LINK_SENT || $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => $successMessage])
+            : response()->json(['message' => $errorMessage], 500);
     }
 }
