@@ -14,7 +14,12 @@ return new class extends Migration
         Schema::create('schools', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('adress');
+            $table->string('email')->nullable();
+            $table->text('address');
+            $table->string('zipcode')->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
+            $table->string('logo')->nullable();
             $table->boolean('access');
             $table->timestamps();
         });

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Classroom>
  */
 class ClassroomFactory extends Factory
 {
@@ -26,7 +26,7 @@ class ClassroomFactory extends Factory
     public function definition(): array
     {
         $grade = fake()->numberBetween(1, 12);
-        $section = chr(fake()->numberBetween(65, 70)); 
+        $section = chr(fake()->numberBetween(65, 70));
 
         return [
             'name' => $grade . $section,
@@ -46,7 +46,6 @@ class ClassroomFactory extends Factory
             'school_id' => $school->id
         ]);
     }
-    
     /**
     * Configures the class for a specific year
     */

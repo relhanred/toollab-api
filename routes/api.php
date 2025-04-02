@@ -35,5 +35,8 @@ Route::prefix('users')->group(function () {
 
 Route::prefix('schools')->group(function () {
     Route::get('/', [SchoolController::class, 'index']);
-    Route::get('/{school}/families', [SchoolController::class, 'getAllfamiliesInSchool']);
+    Route::post('/', [SchoolController::class, 'store']);
+    Route::get('/{school}', [SchoolController::class, 'show']);
+    Route::put('/{school}', [SchoolController::class, 'update']);
+    Route::get('/{school}/families', [SchoolController::class, 'getAllFamiliesInSchool']);
 });

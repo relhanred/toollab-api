@@ -15,11 +15,12 @@ class UserSeeder extends Seeder
     {
         $users = [
             ['first_name' => 'Rayane', 'last_name' => 'QOUCHICH', 'email' => 'rayane.qouchich@gmail.com', 'password' => bcrypt('password'), 'access' => true],
-//                ['first_name' => 'Sebastien', 'last_name' => 'AUVRAY', 'email' => 'rayane.qouchich@gmail.com', 'password' => bcrypt('password'), 'access' => true],
-//                ['first_name' => 'Younes', 'last_name' => 'SERRA', 'email' => 'rayane.qouchich@gmail.com', 'password' => bcrypt('password'), 'access' => true],
-//                ['first_name' => 'Redha', 'last_name' => 'EL HANTI', 'email' => 'rayane.qouchich@gmail.com', 'password' => bcrypt('password'), 'access' => true],
+            // Décommenté et corrigé les adresses email
+            ['first_name' => 'Sebastien', 'last_name' => 'AUVRAY', 'email' => 'sebastien.auvray@gmail.com', 'password' => bcrypt('password'), 'access' => true],
+            ['first_name' => 'Younes', 'last_name' => 'SERRA', 'email' => 'younes.serra@gmail.com', 'password' => bcrypt('password'), 'access' => true],
+            ['first_name' => 'Redha', 'last_name' => 'EL HANTI', 'email' => 'redha.elhanti@gmail.com', 'password' => bcrypt('password'), 'access' => true],
         ];
-        
+
         User::insert($users);
     }
 }

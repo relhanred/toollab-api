@@ -13,7 +13,12 @@ class School extends Model
 
     protected $fillable = [
         'name',
-        'adress',
+        'email',
+        'address',
+        'zipcode',
+        'city',
+        'country',
+        'logo',
         'access',
     ];
 

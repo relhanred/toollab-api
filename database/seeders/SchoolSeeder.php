@@ -13,9 +13,17 @@ class SchoolSeeder extends Seeder
      */
     public function run(): void
     {
-
         $schools = [
-            ['name' => 'Aissa Institut', 'adress' => '7-15 avenue de la porte de la vilette 75019 Paris', 'access' => true],
+            [
+                'name' => 'Aissa Institut',
+                'email' => 'contact@aissa-institut.fr',
+                'address' => '7-15 avenue de la porte de la vilette',
+                'zipcode' => '75019',
+                'city' => 'Paris',
+                'country' => 'France',
+                'logo' => null,
+                'access' => true
+            ],
         ];
 
         School::insert($schools);
