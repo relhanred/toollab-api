@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\PasswordResetController;
 use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,9 +16,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('users', UserController::class);
 });
 
-//Route::get('/user', function (Request $request) {
-//    return $request->user();
-//})->middleware('auth:sanctum');
+Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
+Route::post('reset-password', [PasswordResetController::class, 'resetPassword']);
+
 
 
 //test polymorphic

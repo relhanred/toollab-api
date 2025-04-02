@@ -65,6 +65,19 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used for generating links to the frontend application, such
+    | as password reset links. You should set this to the URL of your frontend
+    | application.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
+
     'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /*
