@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Validation\Rules\Password as PasswordRule;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PasswordResetController extends Controller
 {
@@ -31,6 +32,8 @@ class PasswordResetController extends Controller
             return response()->json(['message' => $validator->errors()->first()], 422);
         }
 
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
         $status = Password::sendResetLink(
             $request->only('email')
         );
@@ -46,6 +49,35 @@ class PasswordResetController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    /**
+     * Check if the password reset token is valid
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkResetToken(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email|exists:users',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first()], 422);
+        }
+
+        $passwordReset = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$passwordReset || Carbon::parse($passwordReset->created_at)->addMinutes(15)->isPast()) {
+            return response()->json(['message' => 'Le lien de réinitialisation a expiré. Veuillez demander un nouveau lien.'], 422);
+        }
+
+        return response()->json(['message' => 'Lien de réinitialisation valide.'], 200);
+    }
+
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -58,14 +90,27 @@ class PasswordResetController extends Controller
             return response()->json(['message' => $validator->errors()->first()], 422);
         }
 
+        $passwordReset = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$passwordReset || Carbon::parse($passwordReset->created_at)->addMinutes(15)->isPast()) {
+            return response()->json(['message' => 'Le lien de réinitialisation a expiré. Veuillez demander un nouveau lien.'], 422);
+        }
+
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
+            function ($user, $password) use ($request) {
                 $user->forceFill([
                     'password' => Hash::make($password)
                 ])->setRememberToken(Str::random(60));
 
                 $user->save();
+
+                DB::table('password_reset_tokens')
+                    ->where('email', $request->email)
+                    ->delete();
 
                 event(new PasswordReset($user));
             }
