@@ -66,8 +66,8 @@ class AuthController extends Controller
     public function logout(Request $request){
         auth()->user()->tokens()->delete();
         $response = [
-            'message'=>"Vous etes désormais déconnecté !",
+            'message'=>"Vous êtes désormais déconnecté !",
         ];
-        return $response;
+        return response($response, 200);
     }
 }
