@@ -48,7 +48,7 @@ class AuthController extends Controller
 
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             $response = [
-                'message'=>"Veuillez entrer un mot de passe valid !",
+                'message'=>"Adresse email ou mot de passe incorrect",
             ];
             return response($response, 401);
         }
