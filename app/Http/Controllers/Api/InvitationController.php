@@ -37,8 +37,14 @@ class InvitationController extends Controller
             ], 404);
         }
 
+        $user = User::where('email', $request->email)->first();
+
         return response()->json([
-            'message' => 'Le token d\'invitation est valide'
+            'message' => 'Le token d\'invitation est valide',
+            'user' => [
+                'email' => $user->email,
+                'name' => $user->first_name . ' ' . $user->last_name
+            ]
         ]);
     }
 
