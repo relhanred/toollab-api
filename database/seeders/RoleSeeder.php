@@ -15,11 +15,13 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             ['name' => 'Director', 'slug' => 'director'],
+            ['name' => 'Admin', 'slug' => 'admin'],
+            ['name' => 'Registar', 'slug' => 'registar'],
             ['name' => 'Responsible', 'slug' => 'responsible'],
             ['name' => 'Student', 'slug' => 'student'],
             ['name' => 'Teacher', 'slug' => 'teacher'],
         ];
-        
+
         Role::insert($roles);
     }
 }
