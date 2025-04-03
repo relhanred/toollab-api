@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSchoolRequest;
+use App\Http\Requests\UpdateSchoolRequest;
 use App\Models\InvitationToken;
 use App\Models\Role;
 use App\Models\School;
@@ -55,8 +56,8 @@ class SchoolController extends Controller
                 'first_name' => $validatedData['director_first_name'],
                 'last_name' => $validatedData['director_last_name'],
                 'email' => $validatedData['director_email'],
-                'password' => bcrypt(Str::random(32)), // Mot de passe temporaire
-                'access' => true, // Le directeur a toujours accès à l'application
+                'password' => bcrypt(Str::random(32)),
+                'access' => true,
             ]);
 
             $directorRole = Role::where('slug', 'director')->first();
@@ -110,22 +111,11 @@ class SchoolController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, School $school)
+    public function update(UpdateSchoolRequest $request, School $school)
     {
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'sometimes|required|string|max:255',
-            'zipcode' => 'nullable|string|max:20',
-            'city' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'access' => 'sometimes|required|boolean',
-        ]);
+        $validatedData = $request->validated();
 
         if ($request->hasFile('logo')) {
-            // Delete the old logo if it exists
             if ($school->logo) {
                 Storage::disk('public')->delete($school->logo);
             }
@@ -144,7 +134,6 @@ class SchoolController extends Controller
      */
     public function destroy(School $school)
     {
-        // Delete the logo file if it exists
         if ($school->logo) {
             Storage::disk('public')->delete($school->logo);
         }
