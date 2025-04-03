@@ -1,11 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\PasswordResetController;
-use App\Models\School;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
  Route::post('register', [AuthController::class, 'register']);
@@ -19,10 +18,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
 Route::post('reset-password', [PasswordResetController::class, 'resetPassword']);
 Route::post('check-reset-token', [PasswordResetController::class, 'checkResetToken']);
+Route::post('/check-invitation-token', [InvitationController::class, 'checkInvitationToken']);
+Route::post('/set-password', [InvitationController::class, 'setPassword']);
 
 
 
-//test polymorphic
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'getAllUsersWithRoles']);
     Route::post('/', [UserController::class, 'store'])->name('users.store');;
