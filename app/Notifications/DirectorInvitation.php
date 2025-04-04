@@ -41,12 +41,11 @@ class DirectorInvitation extends Notification
 
         return (new MailMessage)
             ->subject('Invitation en tant que directeur d\'école')
-            ->greeting('Bonjour ' . $notifiable->first_name . ' ' . $notifiable->last_name)
-            ->line('Vous avez été invité(e) en tant que directeur/directrice de l\'école ' . $this->schoolName . '.')
-            ->line('Pour accéder à votre compte, veuillez définir votre mot de passe en cliquant sur le bouton ci-dessous.')
-            ->action('Définir mon mot de passe', $url)
-            ->line('Ce lien expirera dans 7 jours.')
-            ->line('Si vous n\'avez pas demandé cette invitation, aucune action n\'est requise.');
+            ->view('emails.director-invitation', [
+                'actionUrl' => $url,
+                'schoolName' => $this->schoolName,
+                'notifiable' => $notifiable
+            ]);
     }
 
     /**
