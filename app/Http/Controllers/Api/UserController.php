@@ -23,7 +23,6 @@ class UserController extends Controller
         ->map(function ($userRole) {
             $contextName = $userRole->roleable->name;
 
-            // If it is a family, we look for the name of the person in charge
             if ($userRole->roleable_type === 'family') {
                 $responsibleUser = User::whereHas('roles', function ($query) use ($userRole) {
                     $query->where('roleable_id', $userRole->roleable_id)
@@ -77,13 +76,17 @@ class UserController extends Controller
     {
         $validatedData = $request->validated();
 
-        $user->update([
+        $dataToUpdate = [
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-            'access' => true,
-        ]);
+        ];
+
+        if (!empty($validatedData['password'])) {
+            $dataToUpdate['password'] = bcrypt($validatedData['password']);
+        }
+
+        $user->update($dataToUpdate);
 
         return $user;
     }
