@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::apiResource('users', UserController::class);
-});
 
+    Route::post('/users/change-password', [App\Http\Controllers\Api\UserPasswordController::class, 'changePassword']);
+});
 Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
 Route::post('reset-password', [PasswordResetController::class, 'resetPassword']);
 Route::post('check-reset-token', [PasswordResetController::class, 'checkResetToken']);
